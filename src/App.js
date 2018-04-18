@@ -91,6 +91,8 @@ class App extends Component {
       key: 'sopUID',
       width: '14rem',
       render: text => <a href="javascript:;">{text}</a>,
+      sorter: (a, b) => a.sopInstanceUID.length - b.sopInstanceUID.length,
+      sortOrder: sortedInfo.columnKey === 'sopUID' && sortedInfo.order,
     }, {
       title: 'Patient Name',
       dataIndex: 'patientName',
@@ -103,10 +105,18 @@ class App extends Component {
       title: 'Patient Sex',
       dataIndex: 'patientSex',
       key: 'pSex',
+      filters: [
+        { text: 'Male', value: 'M' },
+        { text: 'Female', value: 'F' },
+      ],
+      filteredValue: filteredInfo.pSex || null,
+      onFilter: (value, record) => record.patientSex === value,
     }, {
       title: 'Study Date',
       dataIndex: 'studyDate',
       key: 'studyDate',
+      sorter: (a, b) => a.studyDate.length - b.studyDate.length,
+      sortOrder: sortedInfo.columnKey === 'studyDate' && sortedInfo.order,
     }, {
       title: 'Study Description',
       dataIndex: 'studyDescription',
@@ -123,8 +133,6 @@ class App extends Component {
       ],
       filteredValue: filteredInfo.mod || null,
       onFilter: (value, record) => record.modality.includes(value),
-      sorter: (a, b) => a.modality.length - b.modality.length,
-      sortOrder: sortedInfo.columnKey === 'mod' && sortedInfo.order,
     }, {
       title: 'Manufacturer',
       dataIndex: 'manufacturer',
@@ -152,39 +160,6 @@ class App extends Component {
     //   ),
     // }
     ];
-
-
-    // const columns = [{
-    //   title: 'Name',
-    //   dataIndex: 'name',
-    //   key: 'name',
-    //   filters: [
-    //     { text: 'Joe', value: 'Joe' },
-    //     { text: 'Jim', value: 'Jim' },
-    //   ],
-    //   filteredValue: filteredInfo.name || null,
-    //   onFilter: (value, record) => record.name.includes(value),
-    //   sorter: (a, b) => a.name.length - b.name.length,
-    //   sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
-    // }, {
-    //   title: 'Age',
-    //   dataIndex: 'age',
-    //   key: 'age',
-    //   sorter: (a, b) => a.age - b.age,
-    //   sortOrder: sortedInfo.columnKey === 'age' && sortedInfo.order,
-    // }, {
-    //   title: 'Address',
-    //   dataIndex: 'address',
-    //   key: 'address',
-    //   filters: [
-    //     { text: 'London', value: 'London' },
-    //     { text: 'New York', value: 'New York' },
-    //   ],
-    //   filteredValue: filteredInfo.address || null,
-    //   onFilter: (value, record) => record.address.includes(value),
-    //   sorter: (a, b) => a.address.length - b.address.length,
-    //   sortOrder: sortedInfo.columnKey === 'address' && sortedInfo.order,
-    // }];
 
 
 
