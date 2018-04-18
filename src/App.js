@@ -7,62 +7,6 @@ const Search = Input.Search;
 
 const {Header, Content, Footer} = Layout;
 
-const columns = [{
-  title: 'SOPInstanceUID',
-  dataIndex: 'sopInstanceUID',
-  key: 'sopUID',
-  width: '14rem',
-  render: text => <a href="javascript:;">{text}</a>,
-}, {
-  title: 'Patient Name',
-  dataIndex: 'patientName',
-  key: 'pName',
-}, {
-  title: 'PatientID',
-  dataIndex: 'patientId',
-  key: 'pID',
-}, {
-  title: 'Patient Sex',
-  dataIndex: 'patientSex',
-  key: 'pSex',
-}, {
-  title: 'Study Date',
-  dataIndex: 'studyDate',
-  key: 'studyDate',
-}, {
-  title: 'Study Description',
-  dataIndex: 'studyDescription',
-  key: 'studyDesc',
-}, {
-  title: 'Modality',
-  dataIndex: 'modality',
-  key: 'mod',
-}, {
-  title: 'Manufacturer',
-  dataIndex: 'manufacturer',
-  key: 'mf',
-}, {
-  title: 'Instrument Model Name',
-  dataIndex: 'manufacturerModelName',
-  key: 'modelName',
-} 
-// {
-//   title: 'Action',
-//   key: 'action',
-//   render: (text, record) => (
-//     <span>
-//       <a href="javascript:;">Action 一 {record.sopUID}</a>
-//       <Divider type="vertical" />
-//       <a href="javascript:;">Delete</a>
-//       <Divider type="vertical" />
-//       <a href="javascript:;" className="ant-dropdown-link">
-//         More actions <Icon type="down" />
-//       </a>
-//     </span>
-//   ),
-// }
-];
-
 
 class App extends Component {
   constructor() {
@@ -71,11 +15,17 @@ class App extends Component {
       query: '',
       dicom: [],
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      filteredInfo: null,
+      sortedInfo: null,
     };
     
     this.handleChange = this.handleChange.bind(this);
     this.getSearchResults = this.getSearchResults.bind(this);
+    this.handleTableChange = this.handleTableChange.bind(this);
+    this.clearFilters = this.clearFilters.bind(this);
+    this.clearAll = this.clearAll.bind(this);
+    this.setDateSort = this.setDateSort.bind(this);
   }
   
   componentDidMount() {
@@ -100,8 +50,144 @@ class App extends Component {
     })
     .catch((err) => console.error(`ERROR when querying server: ${err}`));
   }
+
+  handleTableChange(pagination, filters, sorter) {
+    console.log('Various parameters', pagination, filters, sorter);
+    this.setState({
+      filteredInfo: filters,
+      sortedInfo: sorter,
+    });
+  }
+
+  clearFilters() {
+    this.setState({ filteredInfo: null });
+  }
+  
+  clearAll() {
+    this.setState({
+      filteredInfo: null,
+      sortedInfo: null,
+    });
+  }
+
+  setDateSort() {
+    this.setState({
+      sortedInfo: {
+        order: 'descend',
+        columnKey: 'mod',
+      },
+    });
+  }
   
   render() {
+    let { sortedInfo, filteredInfo } = this.state;
+    sortedInfo = sortedInfo || {};
+    filteredInfo = filteredInfo || {};
+
+
+    const columns = [{
+      title: 'SOPInstanceUID',
+      dataIndex: 'sopInstanceUID',
+      key: 'sopUID',
+      width: '14rem',
+      render: text => <a href="javascript:;">{text}</a>,
+    }, {
+      title: 'Patient Name',
+      dataIndex: 'patientName',
+      key: 'pName',
+    }, {
+      title: 'PatientID',
+      dataIndex: 'patientId',
+      key: 'pID',
+    }, {
+      title: 'Patient Sex',
+      dataIndex: 'patientSex',
+      key: 'pSex',
+    }, {
+      title: 'Study Date',
+      dataIndex: 'studyDate',
+      key: 'studyDate',
+    }, {
+      title: 'Study Description',
+      dataIndex: 'studyDescription',
+      key: 'studyDesc',
+    }, {
+      title: 'Modality',
+      dataIndex: 'modality',
+      key: 'mod',
+      filters: [
+        { text: 'CT', value: 'CT' },
+        { text: 'PT', value: 'PT' },
+        { text: 'US', value: 'US' },
+        { text: 'MR', value: 'MR' }
+      ],
+      filteredValue: filteredInfo.mod || null,
+      onFilter: (value, record) => record.modality.includes(value),
+      sorter: (a, b) => a.modality.length - b.modality.length,
+      sortOrder: sortedInfo.columnKey === 'mod' && sortedInfo.order,
+    }, {
+      title: 'Manufacturer',
+      dataIndex: 'manufacturer',
+      key: 'mf',
+      sorter: (a, b) => a.manufacturer.length - b.manufacturer.length,
+      sortOrder: sortedInfo.columnKey === 'manufacturer' && sortedInfo.order,
+    }, {
+      title: 'Instrument Model Name',
+      dataIndex: 'manufacturerModelName',
+      key: 'modelName',
+    } 
+    // {
+    //   title: 'Action',
+    //   key: 'action',
+    //   render: (text, record) => (
+    //     <span>
+    //       <a href="javascript:;">Action 一 {record.sopUID}</a>
+    //       <Divider type="vertical" />
+    //       <a href="javascript:;">Delete</a>
+    //       <Divider type="vertical" />
+    //       <a href="javascript:;" className="ant-dropdown-link">
+    //         More actions <Icon type="down" />
+    //       </a>
+    //     </span>
+    //   ),
+    // }
+    ];
+
+
+    // const columns = [{
+    //   title: 'Name',
+    //   dataIndex: 'name',
+    //   key: 'name',
+    //   filters: [
+    //     { text: 'Joe', value: 'Joe' },
+    //     { text: 'Jim', value: 'Jim' },
+    //   ],
+    //   filteredValue: filteredInfo.name || null,
+    //   onFilter: (value, record) => record.name.includes(value),
+    //   sorter: (a, b) => a.name.length - b.name.length,
+    //   sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
+    // }, {
+    //   title: 'Age',
+    //   dataIndex: 'age',
+    //   key: 'age',
+    //   sorter: (a, b) => a.age - b.age,
+    //   sortOrder: sortedInfo.columnKey === 'age' && sortedInfo.order,
+    // }, {
+    //   title: 'Address',
+    //   dataIndex: 'address',
+    //   key: 'address',
+    //   filters: [
+    //     { text: 'London', value: 'London' },
+    //     { text: 'New York', value: 'New York' },
+    //   ],
+    //   filteredValue: filteredInfo.address || null,
+    //   onFilter: (value, record) => record.address.includes(value),
+    //   sorter: (a, b) => a.address.length - b.address.length,
+    //   sortOrder: sortedInfo.columnKey === 'address' && sortedInfo.order,
+    // }];
+
+
+
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -130,12 +216,20 @@ class App extends Component {
           />
         </Header>
         <Content>
-          <Table 
-            rowSelection={rowSelection} 
-            columns={columns} 
-            dataSource={this.state.dicom} 
-            size="medium"
-          />
+          <div>
+            <div className="table-operations">
+              <Button onClick={this.setAgeSort}>Sort age</Button>
+              <Button onClick={this.clearFilters}>Clear filters</Button>
+              <Button onClick={this.clearAll}>Clear filters and sorters</Button>
+              <Table
+                rowSelection={rowSelection}
+                columns={columns}
+                dataSource={this.state.dicom}
+                size="medium"
+                onChange={this.handleTableChange}
+              />
+            </div>
+          </div>
         </Content>
       </Layout>
     );
