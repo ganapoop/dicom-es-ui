@@ -26,6 +26,7 @@ class App extends Component {
     this.clearFilters = this.clearFilters.bind(this);
     this.clearAll = this.clearAll.bind(this);
     this.setDateSort = this.setDateSort.bind(this);
+    this.enterIconLoading = this.enterIconLoading.bind(this);
   }
   
   componentDidMount() {
@@ -78,8 +79,20 @@ class App extends Component {
       },
     });
   }
+
+  enterIconLoading = (e) => {
+    this.setState({ iconLoading: e.target.value });
+  }
   
   render() {
+    let modalities = this.state.dicom.reduce((filters, record) => {
+      if (!filters.includes(record.modality)) {
+        filters.push(record.modality);
+      }
+
+      return filters;
+    }, []);
+    
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
@@ -125,12 +138,7 @@ class App extends Component {
       title: 'Modality',
       dataIndex: 'modality',
       key: 'mod',
-      filters: [
-        { text: 'CT', value: 'CT' },
-        { text: 'PT', value: 'PT' },
-        { text: 'US', value: 'US' },
-        { text: 'MR', value: 'MR' }
-      ],
+      filters: modalities.map((modality) => ({ text: modality, value: modality })),
       filteredValue: filteredInfo.mod || null,
       onFilter: (value, record) => record.modality.includes(value),
     }, {
@@ -143,22 +151,25 @@ class App extends Component {
       title: 'Instrument Model Name',
       dataIndex: 'manufacturerModelName',
       key: 'modelName',
-    } 
-    // {
-    //   title: 'Action',
-    //   key: 'action',
-    //   render: (text, record) => (
-    //     <span>
-    //       <a href="javascript:;">Action 一 {record.sopUID}</a>
-    //       <Divider type="vertical" />
-    //       <a href="javascript:;">Delete</a>
-    //       <Divider type="vertical" />
-    //       <a href="javascript:;" className="ant-dropdown-link">
-    //         More actions <Icon type="down" />
-    //       </a>
-    //     </span>
-    //   ),
-    // }
+    }, {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+        <span>
+          <a href="javascript:;">
+            <Button type="primary" size="medium" icon="picture" value={record.sopInstanceUID} loading={this.state.iconLoading === record.sopInstanceUID} onClick={this.enterIconLoading}>
+              View this image
+            </Button>
+          </a>
+          {/* <Divider type="vertical" />
+          <a href="javascript:;">Delete</a>
+          <Divider type="vertical" />
+          <a href="javascript:;" className="ant-dropdown-link">
+            More actions <Icon type="down" />
+          </a> */}
+        </span>
+      ),
+    }
     ];
 
 
