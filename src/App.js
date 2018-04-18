@@ -11,6 +11,7 @@ const columns = [{
   title: 'SOPInstanceUID',
   dataIndex: 'sopInstanceUID',
   key: 'sopUID',
+  width: '14rem',
   render: text => <a href="javascript:;">{text}</a>,
 }, {
   title: 'Patient Name',
@@ -78,7 +79,7 @@ class App extends Component {
   }
   
   componentDidMount() {
-    this.getSearchResults('PT');
+    this.getSearchResults('');
   }
   
   handleChange(e) {
@@ -129,7 +130,12 @@ class App extends Component {
           />
         </Header>
         <Content>
-          <Table rowSelection={rowSelection} columns={columns} dataSource={this.state.dicom} />
+          <Table 
+            rowSelection={rowSelection} 
+            columns={columns} 
+            dataSource={this.state.dicom} 
+            size="medium"
+          />
         </Content>
       </Layout>
     );
