@@ -130,7 +130,7 @@ class App extends Component {
       dataIndex: 'manufacturer',
       key: 'mf',
       sorter: (a, b) => a.manufacturer.length - b.manufacturer.length,
-      sortOrder: sortedInfo.columnKey === 'manufacturer' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === 'mf' && sortedInfo.order,
     }, {
       title: 'Instrument Model Name',
       dataIndex: 'manufacturerModelName',
