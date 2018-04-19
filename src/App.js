@@ -92,24 +92,26 @@ class App extends Component {
 
       return filters;
     }, []);
+
+
+    let scans = this.state.dicom.reduce((scanList, record) => {
+      if (!scanList.includes(record.sopInstanceUID)) {
+        scanList.push(record.sopInstanceUID);
+      }
+      return scanList;
+    }, []);
     
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
 
 
-    const columns = [{
-      title: 'SOPInstanceUID',
-      dataIndex: 'sopInstanceUID',
-      key: 'sopUID',
-      width: '14rem',
-      render: text => <a href="javascript:;">{text}</a>,
-      sorter: (a, b) => a.sopInstanceUID.length - b.sopInstanceUID.length,
-      sortOrder: sortedInfo.columnKey === 'sopUID' && sortedInfo.order,
-    }, {
+    const columns = [
+    {
       title: 'Patient Name',
       dataIndex: 'patientName',
       key: 'pName',
+      render: text => <a href="javascript:;">{text}</a>,
     }, {
       title: 'PatientID',
       dataIndex: 'patientId',
@@ -124,6 +126,17 @@ class App extends Component {
       ],
       filteredValue: filteredInfo.pSex || null,
       onFilter: (value, record) => record.patientSex === value,
+    }, {
+      title: 'SOPInstanceUID',
+      dataIndex: 'sopInstanceUID',
+      key: 'sopUID',
+      width: '14rem',
+      render: text => <a href="javascript:;">{text}</a>,
+      sorter: (a, b) => a.sopInstanceUID.length - b.sopInstanceUID.length,
+      sortOrder: sortedInfo.columnKey === 'sopUID' && sortedInfo.order,
+      filters: scans.map((scan) => ({ text: scan, value: scan })),
+      filteredValue: filteredInfo.sopUID || null,
+      onFilter: (value, record) => record.sopInstanceUID.includes(value),
     }, {
       title: 'Study Date',
       dataIndex: 'studyDate',
