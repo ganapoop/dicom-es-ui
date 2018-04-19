@@ -25,7 +25,7 @@ class App extends Component {
     this.handleTableChange = this.handleTableChange.bind(this);
     this.clearFilters = this.clearFilters.bind(this);
     this.clearAll = this.clearAll.bind(this);
-    this.setDateSort = this.setDateSort.bind(this);
+    // this.setDateSort = this.setDateSort.bind(this);
     this.enterIconLoading = this.enterIconLoading.bind(this);
   }
   
@@ -44,7 +44,7 @@ class App extends Component {
   getSearchResults(query) {
     Axios.get(`http://localhost:5005/search?q=${query}`)
     .then(({data}) => {
-      console.log(`return payload from server after query submission: ${JSON.stringify(data)}, ${Array.isArray(data)}`);
+      // console.log(`return payload from server after query submission: ${JSON.stringify(data)}, ${Array.isArray(data)}`);
       this.setState({
         dicom: data
       });
@@ -71,14 +71,14 @@ class App extends Component {
     });
   }
 
-  setDateSort() {
-    this.setState({
-      sortedInfo: {
-        order: 'descend',
-        columnKey: 'mod',
-      },
-    });
-  }
+  // setDateSort() {
+  //   this.setState({
+  //     sortedInfo: {
+  //       order: 'descend',
+  //       columnKey: 'studyDate',
+  //     },
+  //   });
+  // }
 
   enterIconLoading = (e) => {
     this.setState({ iconLoading: e.target.value });
@@ -100,6 +100,14 @@ class App extends Component {
       }
       return scanList;
     }, []);
+
+    let instruments = this.state.dicom.reduce((instrumentList, record) => {
+      if (!instrumentList[0].includes(record.manufacturerModelName)) {
+        instrumentList[0].push(record.manufacturerModelName);
+        instrumentList[1].push({mf: record.manufacturer, modelName: record.manufacturerModelName});
+      }
+      return instrumentList;
+    }, [[], []])[1];
     
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
@@ -141,7 +149,7 @@ class App extends Component {
       title: 'Study Date',
       dataIndex: 'studyDate',
       key: 'studyDate',
-      sorter: (a, b) => a.studyDate.length - b.studyDate.length,
+      sorter: (a, b) => a.studyDate > b.studyDate,
       sortOrder: sortedInfo.columnKey === 'studyDate' && sortedInfo.order,
     }, {
       title: 'Study Description',
@@ -158,19 +166,22 @@ class App extends Component {
       title: 'Manufacturer',
       dataIndex: 'manufacturer',
       key: 'mf',
-      sorter: (a, b) => a.manufacturer.length - b.manufacturer.length,
+      sorter: (a, b) => a.manufacturer > b.manufacturer,
       sortOrder: sortedInfo.columnKey === 'mf' && sortedInfo.order,
     }, {
       title: 'Instrument Model Name',
       dataIndex: 'manufacturerModelName',
       key: 'modelName',
+      filters: instruments.map((instrument) => ({ text: instrument.mf + ' ' + instrument.modelName, value: instrument.modelName })),
+      filteredValue: filteredInfo.modelName || null,
+      onFilter: (value, record) => record.manufacturerModelName.includes(value)
     }, {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
         <span>
           <a href="javascript:;">
-            <Button type="primary" size="medium" icon="picture" value={record.sopInstanceUID} loading={this.state.iconLoading === record.sopInstanceUID} onClick={this.enterIconLoading}>
+            <Button type="primary" icon="picture" value={record.sopInstanceUID} loading={this.state.iconLoading === record.sopInstanceUID} onClick={this.enterIconLoading}>
               View this {record.modality} scan
             </Button>
           </a>
@@ -249,6 +260,7 @@ class App extends Component {
             </Breadcrumb>
             <div className="table-operations">
               <Table
+                rowKey={record => record.uid}
                 title={tableTitle}
                 rowSelection={rowSelection}
                 columns={columns}
