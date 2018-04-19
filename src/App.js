@@ -171,7 +171,7 @@ class App extends Component {
         <span>
           <a href="javascript:;">
             <Button type="primary" size="medium" icon="picture" value={record.sopInstanceUID} loading={this.state.iconLoading === record.sopInstanceUID} onClick={this.enterIconLoading}>
-              View this image
+              View this {record.modality} scan
             </Button>
           </a>
           {/* <Divider type="vertical" />
@@ -201,6 +201,22 @@ class App extends Component {
         name: record.name,
       }),
     };
+
+
+    const downloadButton = () => {
+      if (this.state.selectedRows.length === 0) {
+        return (
+          <Button type="dashed" disabled>
+            <Icon type="cloud-download" /> Download Selected Files
+        </Button>);
+      } else {
+        return (
+          <Button onClick={this.setAgeSort} type="primary" >
+            <Icon type="cloud-download" /> Download {this.state.selectedRows.length} Selected {this.state.selectedRows.length === 1 ? 'File' : 'Files'}
+      </Button>)
+      }
+    };
+
     return (
       <Layout className="layout">
         <Header>
@@ -214,9 +230,9 @@ class App extends Component {
             style={{ width: 600 }}
           />
           <div>
-            {/* <Button onClick={this.setAgeSort}>Sort age</Button> */}
             <Button onClick={this.clearFilters}>Clear filters</Button>
             <Button onClick={this.clearAll}>Clear filters and sorters</Button>
+            {downloadButton()}
           </div>
         </Header>
         <Content>
