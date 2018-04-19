@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
-import { Layout, Button, Input, Table, Icon, Divider, Avatar } from 'antd';
+import { Layout, Button, Input, Table, Icon, Divider, Avatar} from 'antd';
 import logo from './logo.png'
 
 const Search = Input.Search;
