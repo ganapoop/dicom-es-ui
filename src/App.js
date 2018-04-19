@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
-import { Layout, Button, Input, Table, Icon, Divider, Avatar, Breadcrumb} from 'antd';
-import logo from './logo.png'
+import { Layout, Button, Input, Table, Icon, Divider, Avatar, Breadcrumb, Row, Col} from 'antd';
+import logo from './logo.png';
+
+import Viewer from './Viewer';
 
 const Search = Input.Search;
 
@@ -18,6 +20,7 @@ class App extends Component {
       selectedRows: [],
       filteredInfo: null,
       sortedInfo: null,
+      view: 'search'
     };
     
     this.handleChange = this.handleChange.bind(this);
@@ -81,7 +84,10 @@ class App extends Component {
   // }
 
   enterIconLoading = (e) => {
-    this.setState({ iconLoading: e.target.value });
+    this.setState({ 
+      // iconLoading: e.target.value
+      view: e.target.value
+    });
   }
   
   render() {
@@ -128,6 +134,7 @@ class App extends Component {
       title: 'Patient Sex',
       dataIndex: 'patientSex',
       key: 'pSex',
+      width: '5rem',
       filters: [
         { text: 'Male', value: 'M' },
         { text: 'Female', value: 'F' },
@@ -172,6 +179,7 @@ class App extends Component {
       title: 'Instrument Model Name',
       dataIndex: 'manufacturerModelName',
       key: 'modelName',
+      width: '14rem',
       filters: instruments.map((instrument) => ({ text: instrument.mf + ' ' + instrument.modelName, value: instrument.modelName })),
       filteredValue: filteredInfo.modelName || null,
       onFilter: (value, record) => record.manufacturerModelName.includes(value)
@@ -237,40 +245,69 @@ class App extends Component {
       );
     }
 
+    // this.state.query === null ? () : 
+
+    //testing viewer implementation
+    const imageId =
+  "https://rawgit.com/cornerstonejs/cornerstoneWebImageLoader/master/examples/Renal_Cell_Carcinoma.jpg";
+
+    const stack = {
+      imageIds: [imageId],
+      currentImageIdIndex: 0
+    };
+
     return (
       <Layout className="layout">
-        <Header>
-          <img src={logo} style={{ paddingRight: 24, maxWidth: 60 }}/>
-          <Search
-            placeholder="input search text"
-            value={this.state.query}
-            onSearch={() => this.getSearchResults(this.state.query)}
-            onChange={this.handleChange}
-            enterButton
-            style={{ width: 600 }}
-          />
-          
+        <Header style={{ display: 'inline-block', height: 64, width: '100%'}}>
+          <Row style={{ height: 64 }}>
+          <img src={logo}  style={{ paddingRight: 24, maxHeight: 38 }} />
+            <div style={{ display: 'inline-block'}}>
+              {this.state.view === 'search' ? (
+                <Search
+                  placeholder="input search text"
+                  value={this.state.query}
+                  onSearch={() => this.getSearchResults(this.state.query)}
+                  onChange={this.handleChange}
+                  enterButton
+                  style={{ width: 600 }}
+                />
+              ) : (
+                  <h1 style={{ color: 'white', fontWeight: 500 }}>Viewing Scan: {this.state.view}</h1>
+                )}
+            </div>
+          </Row>
         </Header>
         <Content>
-          <div>
-            <Breadcrumb style={{ paddingTop: '.4rem' }}>
-              <Breadcrumb.Item>INDUS DICOM EXPLORER</Breadcrumb.Item>
-              <Breadcrumb.Item><a href="">Search</a></Breadcrumb.Item>
+          {this.state.view === 'search' ? (
+            <div>
+              <Breadcrumb style={{ paddingTop: '.4rem' }}>
+                <Breadcrumb.Item>INDUS DICOM EXPLORER</Breadcrumb.Item>
+                <Breadcrumb.Item><a href="">Search</a></Breadcrumb.Item>
 
-            </Breadcrumb>
-            <div className="table-operations">
-              <Table
-                rowKey={record => record.uid}
-                title={tableTitle}
-                rowSelection={rowSelection}
-                columns={columns}
-                dataSource={this.state.dicom}
-                size="medium"
-                onChange={this.handleTableChange}
-                pagination={{ position: 'bottom', showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`}}
-              />
+              </Breadcrumb>
+              <div className="table-operations">
+                <Table
+                  rowKey={record => record.uid}
+                  title={tableTitle}
+                  rowSelection={rowSelection}
+                  columns={columns}
+                  dataSource={this.state.dicom}
+                  size="medium"
+                  onChange={this.handleTableChange}
+                  pagination={{ position: 'bottom', showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items` }}
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div>
+              <Breadcrumb style={{ paddingTop: '.4rem' }}>
+                <Breadcrumb.Item>INDUS DICOM EXPLORER</Breadcrumb.Item>
+                <Breadcrumb.Item><a href="">Search</a></Breadcrumb.Item>
+                <Breadcrumb.Item><a href="">Viewer: Scan {this.state.view}</a></Breadcrumb.Item>
+              </Breadcrumb>
+              <Viewer stack={{ ...stack }} />
+            </div>
+          )}
         </Content>
       </Layout>
     );
