@@ -213,19 +213,22 @@ class App extends Component {
             enterButton
             style={{ width: 600 }}
           />
+          <div>
+            {/* <Button onClick={this.setAgeSort}>Sort age</Button> */}
+            <Button onClick={this.clearFilters}>Clear filters</Button>
+            <Button onClick={this.clearAll}>Clear filters and sorters</Button>
+          </div>
         </Header>
         <Content>
           <div>
             <div className="table-operations">
-              <Button onClick={this.setAgeSort}>Sort age</Button>
-              <Button onClick={this.clearFilters}>Clear filters</Button>
-              <Button onClick={this.clearAll}>Clear filters and sorters</Button>
               <Table
                 rowSelection={rowSelection}
                 columns={columns}
                 dataSource={this.state.dicom}
                 size="medium"
                 onChange={this.handleTableChange}
+                pagination={{ position: 'both', showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`}}
               />
             </div>
           </div>
