@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
-import { Layout, Button, Input, Table, Icon, Divider, Avatar} from 'antd';
+import { Layout, Button, Input, Table, Icon, Divider, Avatar, Breadcrumb} from 'antd';
 import logo from './logo.png'
 
 const Search = Input.Search;
@@ -202,7 +202,6 @@ class App extends Component {
       }),
     };
 
-
     const downloadButton = () => {
       if (this.state.selectedRows.length === 0) {
         return (
@@ -217,6 +216,16 @@ class App extends Component {
       }
     };
 
+    const tableTitle = () => {
+      return (
+        <div>
+          <Button onClick={this.clearFilters}>Clear filters</Button>
+          <Button onClick={this.clearAll}>Clear filters and sorters</Button>
+          {downloadButton()}
+        </div>
+      );
+    }
+
     return (
       <Layout className="layout">
         <Header>
@@ -229,22 +238,24 @@ class App extends Component {
             enterButton
             style={{ width: 600 }}
           />
-          <div>
-            <Button onClick={this.clearFilters}>Clear filters</Button>
-            <Button onClick={this.clearAll}>Clear filters and sorters</Button>
-            {downloadButton()}
-          </div>
+          
         </Header>
         <Content>
           <div>
+            <Breadcrumb style={{ paddingTop: '.4rem' }}>
+              <Breadcrumb.Item>INDUS DICOM EXPLORER</Breadcrumb.Item>
+              <Breadcrumb.Item><a href="">Search</a></Breadcrumb.Item>
+
+            </Breadcrumb>
             <div className="table-operations">
               <Table
+                title={tableTitle}
                 rowSelection={rowSelection}
                 columns={columns}
                 dataSource={this.state.dicom}
                 size="medium"
                 onChange={this.handleTableChange}
-                pagination={{ position: 'both', showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`}}
+                pagination={{ position: 'bottom', showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`}}
               />
             </div>
           </div>
