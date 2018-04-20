@@ -1786,6 +1786,12 @@ cornerstone-tools@^2.1.0:
   dependencies:
     cornerstone-math "^0.1.6"
 
+cornerstone-wado-image-loader@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-2.1.1.tgz#8707e39caad4506ab2f1fc85bf1f3913fdab1d95"
+  dependencies:
+    dicom-parser "^1.7.6"
+
 cornerstone-web-image-loader@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/cornerstone-web-image-loader/-/cornerstone-web-image-loader-2.0.0.tgz#0c895baa71807a520201b927958e05cdec6d0b88"
@@ -2157,6 +2163,10 @@ detect-port-alt@1.1.6:
   dependencies:
     address "^1.0.1"
     debug "^2.6.0"
+
+dicom-parser@^1.7.6:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.0.tgz#f2420de53bec47e756212f1790d1c107784d0170"
 
 diff@^3.2.0:
   version "3.5.0"

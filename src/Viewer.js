@@ -16,7 +16,7 @@ class Viewer extends Component {
     cornerstoneTools.external.cornerstone = cornerstone;
     cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
     cornerstoneTools.external.Hammer = Hammer;
-    exampleImageIdLoader(cornerstone);
+    exampleImageIdLoader(cornerstone, this.props.imageData, this.props.imageId);
   }
   componentDidMount() {
     this.loadImage();

@@ -4,6 +4,7 @@ import { Layout, Button, Input, Table, Icon, Divider, Avatar, Breadcrumb, Row, C
 import logo from './logo.png';
 
 import Viewer from './Viewer';
+import Viewer2 from './Viewer2'
 
 const Search = Input.Search;
 
@@ -20,7 +21,10 @@ class App extends Component {
       selectedRows: [],
       filteredInfo: null,
       sortedInfo: null,
-      view: 'search'
+      view: 'search',
+      iconLoading: false,
+      imageData: null,
+      imageId: null
     };
     
     this.handleChange = this.handleChange.bind(this);
@@ -30,6 +34,7 @@ class App extends Component {
     this.clearAll = this.clearAll.bind(this);
     // this.setDateSort = this.setDateSort.bind(this);
     this.enterIconLoading = this.enterIconLoading.bind(this);
+    this.getScanImage = this.getScanImage.bind(this);
   }
   
   componentDidMount() {
@@ -47,12 +52,29 @@ class App extends Component {
   getSearchResults(query) {
     Axios.get(`http://localhost:5005/search?q=${query}`)
     .then(({data}) => {
-      // console.log(`return payload from server after query submission: ${JSON.stringify(data)}, ${Array.isArray(data)}`);
+      console.log(`return payload from server after query submission: ${JSON.stringify(data)}, ${Array.isArray(data)}`);
       this.setState({
         dicom: data
       });
     })
     .catch((err) => console.error(`ERROR when querying server: ${err}`));
+  }
+
+  getScanImage(record) {
+    let { filePath, sopInstanceUID } = record;
+
+    Axios.get(`http://localhost:5005/scan?q=${filePath}`)
+      .then(({data}) => {
+        console.log('recieving binary scan data:', data);
+
+        this.setState({
+          view: sopInstanceUID,
+          iconLoading: false,
+          imageData: data,
+          imageId: filePath
+        });
+      })
+      .catch((err) => console.error(`ERROR fetching scan image data for: ${sopInstanceUID} @ filepath: ${filePath}`));
   }
 
   handleTableChange(pagination, filters, sorter) {
@@ -83,11 +105,18 @@ class App extends Component {
   //   });
   // }
 
-  enterIconLoading = (e) => {
+  enterIconLoading = (record) => {
+
+
+    console.log(record);
+    
     this.setState({ 
-      // iconLoading: e.target.value
-      view: e.target.value
+      iconLoading: record.sopInstanceUID,
+      imageId: record.filePath,
+      view: record.sopInstanceUID
     });
+
+    // this.getScanImage(record);
   }
   
   render() {
@@ -189,7 +218,12 @@ class App extends Component {
       render: (text, record) => (
         <span>
           <a href="javascript:;">
-            <Button type="primary" icon="picture" value={record.sopInstanceUID} loading={this.state.iconLoading === record.sopInstanceUID} onClick={this.enterIconLoading}>
+            <Button 
+              type="primary" 
+              icon="picture" 
+              loading={this.state.iconLoading === record.sopInstanceUID} 
+              onClick={() => this.enterIconLoading(record)}
+            >
               View this {record.modality} scan
             </Button>
           </a>
@@ -305,7 +339,7 @@ class App extends Component {
                 <Breadcrumb.Item><a href="">Search</a></Breadcrumb.Item>
                 <Breadcrumb.Item><a href="">Viewer: Scan {this.state.view}</a></Breadcrumb.Item>
               </Breadcrumb>
-              <Viewer stack={{ ...stack }} />
+              <Viewer2 stack={{ ...stack }} imageId={'http://localhost:5005/scan?q=' + this.state.imageId}/>
             </div>
           )}
         </Content>
