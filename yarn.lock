@@ -2164,7 +2164,7 @@ detect-port-alt@1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
-dicom-parser@^1.7.6:
+dicom-parser@^1.7.6, dicom-parser@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.0.tgz#f2420de53bec47e756212f1790d1c107784d0170"
 
