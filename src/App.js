@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
+import FileDownload from 'js-file-download';
 import { Layout, Button, Input, Table, Icon, Divider, Avatar, Breadcrumb, Row, Col} from 'antd';
 import logo from './logo.png';
 
@@ -35,6 +36,7 @@ class App extends Component {
     // this.setDateSort = this.setDateSort.bind(this);
     this.enterIconLoading = this.enterIconLoading.bind(this);
     this.getScanImage = this.getScanImage.bind(this);
+    this.downloadFiles = this.downloadFiles.bind(this);
   }
   
   componentDidMount() {
@@ -105,7 +107,28 @@ class App extends Component {
   //   });
   // }
 
-  enterIconLoading = (record) => {
+
+  downloadFiles() {
+
+    //make a post request to the server for the selected files in state
+      //on success download zipped files
+
+    const filePaths = this.state.selectedRows.map((row) => row.filePath);
+
+    // console.log('mapped filepaths presend', filePaths);
+
+    Axios.post('http://localhost:5005/files', { filePaths: filePaths })
+      .then(({data}) => {
+        console.log('post selected files to server successful! data:', data);
+        FileDownload(data, 'attachment.zip'); 
+      })
+      .catch((err) => console.error('ERROR posting selected files to server: ', err))
+
+  }
+
+
+
+  enterIconLoading(record) {
 
 
     console.log(record);
@@ -263,9 +286,9 @@ class App extends Component {
         </Button>);
       } else {
         return (
-          <Button onClick={this.setAgeSort} type="primary" >
+          <Button onClick={this.downloadFiles} type="primary" >
             <Icon type="cloud-download" /> Download {this.state.selectedRows.length} Selected {this.state.selectedRows.length === 1 ? 'File' : 'Files'}
-      </Button>)
+          </Button>);
       }
     };
 
