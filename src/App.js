@@ -3,9 +3,11 @@ import Axios from 'axios';
 import FileDownload from 'js-file-download';
 import { Layout, Button, Input, Table, Icon, Divider, Avatar, Breadcrumb, Row, Col} from 'antd';
 import logo from './logo.png';
-
+import download from 'downloadjs';
 import Viewer from './Viewer';
-import Viewer2 from './Viewer2'
+import Viewer2 from './Viewer2';
+
+// const download = require("downloadjs")(data, strFileName, strMimeType);
 
 const Search = Input.Search;
 
@@ -119,8 +121,9 @@ class App extends Component {
 
     Axios.post('http://localhost:5005/files', { filePaths: filePaths })
       .then(({data}) => {
-        console.log('post selected files to server successful! data:', data);
-        FileDownload(data, 'attachment.zip'); 
+        console.log('post selected files to server successful! data:', typeof data);
+        // FileDownload(data, 'attachment.zip');
+        download(data, 'dicomDump.zip', 'application/zip'); 
       })
       .catch((err) => console.error('ERROR posting selected files to server: ', err))
 
