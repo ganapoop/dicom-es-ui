@@ -54,7 +54,7 @@ class App extends Component {
   }
   
   getSearchResults(query) {
-    Axios.get(`http://localhost:5005/search?q=${query}`)
+    Axios.get(`/search?q=${query}`)
     .then(({data}) => {
       console.log(`return payload from server after query submission: ${JSON.stringify(data)}, ${Array.isArray(data)}`);
       this.setState({
@@ -67,7 +67,7 @@ class App extends Component {
   getScanImage(record) {
     let { filePath, sopInstanceUID } = record;
 
-    Axios.get(`http://localhost:5005/scan?q=${filePath}`)
+    Axios.get(`/scan?q=${filePath}`)
       .then(({data}) => {
         console.log('recieving binary scan data:', data);
 
@@ -119,7 +119,7 @@ class App extends Component {
 
     // console.log('mapped filepaths presend', filePaths);
 
-    Axios.post('http://localhost:5005/files', { filePaths: filePaths })
+    Axios.post('/files', { filePaths: filePaths })
       .then(({data}) => {
         console.log('post selected files to server successful! data:', typeof data);
         // FileDownload(data, 'attachment.zip');
